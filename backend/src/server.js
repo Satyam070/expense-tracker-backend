@@ -31,7 +31,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/transactions", transactionsRoute);
 
 initDB().then(() => {
-  app.listen(PORT, "0.0.0.0", () => {
+  app.listen(PORT, () => {
     console.log("Server is up and running on PORT:", PORT);
   });
 });
