@@ -1,12 +1,14 @@
+// controllers/transactionsController.js
 import { sql } from "../config/db.js";
+import { createActivity } from "./activityController.js";
 
 export async function getTransactionsByUserId(req, res) {
   try {
     const { userId } = req.params;
 
     const transactions = await sql`
-        SELECT * FROM transactions WHERE user_id = ${userId} ORDER BY created_at DESC
-      `;
+      SELECT * FROM transactions WHERE user_id = ${userId} ORDER BY created_at DESC
+    `;
 
     res.status(200).json(transactions);
   } catch (error) {
@@ -24,12 +26,15 @@ export async function createTransaction(req, res) {
     }
 
     const transaction = await sql`
-      INSERT INTO transactions(user_id,title,amount,category)
-      VALUES (${user_id},${title},${amount},${category})
+      INSERT INTO transactions(user_id, title, amount, category)
+      VALUES (${user_id}, ${title}, ${amount}, ${category})
       RETURNING *
     `;
 
+    // ✅ log activity
+    const act = await createActivity(user_id, "Transaction Created", `Title: ${title}, Amount: ${amount}`);
     console.log(transaction);
+
     res.status(201).json(transaction[0]);
   } catch (error) {
     console.log("Error creating the transaction", error);
@@ -52,6 +57,14 @@ export async function deleteTransaction(req, res) {
     if (result.length === 0) {
       return res.status(404).json({ message: "Transaction not found" });
     }
+    console.log(result);
+
+    // ✅ log activity
+    const act = await createActivity(
+      result[0].user_id,
+      "Transaction Deleted",
+      `Title: ${result[0].title}, Amount: ${result[0].amount}`
+    );
 
     res.status(200).json({ message: "Transaction deleted successfully" });
   } catch (error) {
@@ -84,7 +97,7 @@ export async function getSummaryByUserId(req, res) {
       expenses: expensesResult[0].expenses,
     });
   } catch (error) {
-    console.log("Error gettin the summary", error);
+    console.log("Error getting the summary", error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
