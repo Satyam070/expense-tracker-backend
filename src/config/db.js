@@ -15,6 +15,13 @@ export async function initDB() {
       category VARCHAR(255) NOT NULL,
       created_at DATE NOT NULL DEFAULT CURRENT_DATE
     )`;
+    await sql`CREATE TABLE IF NOT EXISTS activities(
+      id SERIAL PRIMARY KEY,
+      user_id VARCHAR(255) NOT NULL,
+      action VARCHAR(255) NOT NULL,
+      details TEXT,
+      created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    )`;
 
     console.log("Database initialized successfully");
   } catch (error) {
