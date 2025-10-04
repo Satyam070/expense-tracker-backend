@@ -32,7 +32,8 @@ export async function createTransaction(req, res) {
     `;
 
     // ✅ log activity
-    await createActivity(user_id, "Transaction Created", `Title: ${title}, Amount: ${amount}`);
+    const act = await createActivity(user_id, "Transaction Created", `Title: ${title}, Amount: ${amount}`);
+    console.log(transaction);
 
     res.status(201).json(transaction[0]);
   } catch (error) {
@@ -56,9 +57,10 @@ export async function deleteTransaction(req, res) {
     if (result.length === 0) {
       return res.status(404).json({ message: "Transaction not found" });
     }
+    console.log(result);
 
     // ✅ log activity
-    await createActivity(
+    const act = await createActivity(
       result[0].user_id,
       "Transaction Deleted",
       `Title: ${result[0].title}, Amount: ${result[0].amount}`
