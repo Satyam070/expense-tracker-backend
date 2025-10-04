@@ -1,7 +1,20 @@
 // controllers/activityController.js
 import { sql } from "../config/db.js";
 
-export async function getActivitiesByUserId(req, res) {
+// 🔹 Utility function (called directly in other controllers)
+export async function createActivity(userId, action, details) {
+  try {
+    await sql`
+      INSERT INTO activities (user_id, action, details)
+      VALUES (${userId}, ${action}, ${details})
+    `;
+  } catch (error) {
+    console.error("Error logging activity:", error);
+  }
+}
+
+// 🔹 Route handler (GET /api/activities/:userId)
+export async function getActivitiesByUser(req, res) {
   try {
     const { userId } = req.params;
 
@@ -11,19 +24,7 @@ export async function getActivitiesByUserId(req, res) {
 
     res.status(200).json(activities);
   } catch (error) {
-    console.error("Error getting activities", error);
+    console.error("Error fetching activities:", error);
     res.status(500).json({ message: "Internal server error" });
-  }
-}
-
-// helper function to log activities
-export async function createActivity(user_id, action, details = null) {
-  try {
-    await sql`
-      INSERT INTO activities(user_id, action, details)
-      VALUES (${user_id}, ${action}, ${details})
-    `;
-  } catch (error) {
-    console.error("Error creating activity", error);
   }
 }
