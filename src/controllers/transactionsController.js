@@ -4,8 +4,7 @@ import { createActivity } from "./activityController.js";
 
 export async function getTransactionsByUserId(req, res) {
   try {
-    const { userId } = req.params;
-
+const userId = req.auth.userId; // ✅ from Clerk, not params
     const transactions = await sql`
       SELECT * FROM transactions WHERE user_id = ${userId} ORDER BY created_at DESC
     `;
@@ -19,9 +18,11 @@ export async function getTransactionsByUserId(req, res) {
 
 export async function createTransaction(req, res) {
   try {
-    const { title, amount, category, user_id } = req.body;
+        const user_id = req.auth.userId; // ✅ Clerk user
 
-    if (!title || !user_id || !category || amount === undefined) {
+    const { title, amount, category } = req.body;
+
+    if (!title || !category || amount === undefined) {
       return res.status(400).json({ message: "All fields are required" });
     }
 

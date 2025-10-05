@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { initDB } from "./config/db.js";
 import rateLimiter from "./middleware/rateLimiter.js";
+import { requireAuth } from "./middleware/clerkAuth.js";
 
 import transactionsRoute from "./routes/transactionsRoute.js";
 import activitiesRoute from "./routes/activityRoute.js";
@@ -29,8 +30,8 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-app.use("/api/transactions", transactionsRoute);
-app.use("/api/activities", activitiesRoute);
+app.use("/api/transactions", requireAuth, transactionsRoute);
+app.use("/api/activities", requireAuth, activitiesRoute);
 
 initDB().then(() => {
   app.listen(PORT, () => {

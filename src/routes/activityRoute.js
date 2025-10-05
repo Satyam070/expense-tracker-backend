@@ -5,6 +5,6 @@ import { getActivitiesByUser } from "../controllers/activityController.js";
 const router = express.Router();
 
 // GET all activities for a user
-router.get("/:userId", getActivitiesByUser);
+router.get("/", getActivitiesByUser);
 
 export default router;

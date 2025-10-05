@@ -16,7 +16,7 @@ export async function createActivity(userId, action, details) {
 // 🔹 Route handler (GET /api/activities/:userId)
 export async function getActivitiesByUser(req, res) {
   try {
-    const { userId } = req.params;
+    const userId = req.auth.userId; // ✅ Clerk user
 
     const activities = await sql`
       SELECT * FROM activities WHERE user_id = ${userId} ORDER BY created_at DESC
